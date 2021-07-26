@@ -33,7 +33,7 @@ export function Footer({step, nextStep, finishStep, firstStep, lastStep, previou
         </Button>
       )}
       {step === lastStep && (
-        <Button color="teal.500" fontSize="24px" variant="link" fontWeight="normal">
+        <Button color="teal.500" fontSize="24px" variant="link" fontWeight="normal" onClick={finishStep}>
           SALVAR
         </Button>
       )}

@@ -14,6 +14,20 @@ export default function Home() {
   const { user } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  function finishStep() {
+    onOpen();
+    setStep(1);
+  }
+
+  function nextStep() {
+    if (step === 1 && duvida === '2') {
+      onOpen();
+      return;
+    }
+
+    setStep(step+1)
+  }
+
   return (
     <Box h="100vh">
       <Header />
@@ -108,7 +122,7 @@ export default function Home() {
           <div>3</div>
         )}
       </Layout>
-      <Footer step={step} firstStep={1} lastStep={2} nextStep={() => setStep(step+1)} previousStep={() => setStep(step-1)} finishStep={() => setStep(step+1)} />
+      <Footer step={step} firstStep={1} lastStep={2} nextStep={nextStep} previousStep={() => setStep(step-1)} finishStep={finishStep} />
       <ModalFinish isOpen={isOpen} onClose={onClose} onOpen={onOpen} />
     </Box>
   )
