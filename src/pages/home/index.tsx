@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function Home() {
+  const [duvida, setDuvida] = useState(true);
   const [step, setStep] = useState(1);
   const { user } = useAuth();
 
@@ -19,8 +20,8 @@ export default function Home() {
       <Layout>
         {step === 1 && (
           <Box>
-            <Text fontSize="28px" ml="40px" mt="35px">Olá {user.dsc_nome_completo}, bem vindo!</Text>
-            <Flex justify="space-between" align="center" ml="60px" mt="95px">
+            <Text fontSize="28px" ml="40px" mt="35px">Olá {user?.dsc_nome_completo}, bem vindo!</Text>
+            <Flex justify="space-between" align="center" ml="60px" mt="95px" alignItems="flex-start">
               <Box flex=".5">
                 <Text fontSize="28px">Conta pra gente, como foi seu dia?</Text>
               </Box>
@@ -30,13 +31,27 @@ export default function Home() {
             </Flex>
             <RadioGroup ml="80px" mt="50px">
               <HStack align="center">
-                <Flex flex=".5" bg=" rgba(96, 199, 175, 0.1)" border="1px solid #60C7AF" h="80px" align="center" px="20px">
-                  <Radio colorScheme="teal" value="1" size="lg">
+                <Flex 
+                  flex=".5" 
+                  bg={duvida ? 'rgba(96, 199, 175, 0.1)' : ''} 
+                  border={duvida ? "1px solid #60C7AF" : '1px solid #E5E5E5'}
+                  h="80px" 
+                  align="center" 
+                  px="20px"
+                >
+                  <Radio colorScheme="teal" value="1" size="lg" name="" onChange={() => setDuvida(true)}>
                     <Text fontSize="28px">Tive Dúvidas</Text>
                   </Radio>
                 </Flex>
-                <Flex flex=".5" border="1px solid #E5E5E5" h="80px" align="center" px="20px">
-                  <Radio colorScheme="teal" value="2" fontSize="28px" size="lg">
+                <Flex 
+                  flex=".5" 
+                  bg={!duvida ? 'rgba(96, 199, 175, 0.1)' : ''} 
+                  border={!duvida ? "1px solid #60C7AF" : '1px solid #E5E5E5'}
+                  h="80px" 
+                  align="center" 
+                  px="20px"
+                >
+                  <Radio colorScheme="teal" value="2" fontSize="28px" size="lg" onChange={() => setDuvida(false)}>
                     <Text fontSize="28px">Não tive Dúvidas</Text>
                   </Radio>
                 </Flex>
