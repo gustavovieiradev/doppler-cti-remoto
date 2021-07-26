@@ -1,4 +1,4 @@
-import { Box, Text, Flex, HStack, RadioGroup, Radio, VStack } from "@chakra-ui/react";
+import { Box, Text, Flex, HStack, RadioGroup, Radio, VStack, useDisclosure, Button } from "@chakra-ui/react";
 import { BsChevronCompactDown } from 'react-icons/bs';
 import { Header } from "../components/Header";
 import { Layout } from "../components/Layout";
@@ -6,13 +6,13 @@ import { InputDate } from "../components/InputDate";
 import { Footer } from "../components/Footer";
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
+import { ModalFinish } from "../components/ModalFinish";
 
 export default function Home() {
-  const [duvida, setDuvida] = useState(true);
+  const [duvida, setDuvida] = useState("1");
   const [step, setStep] = useState(1);
   const { user } = useAuth();
-
-  console.log(user);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Box h="100vh">
@@ -29,7 +29,7 @@ export default function Home() {
                 <InputDate />
               </Box>
             </Flex>
-            <RadioGroup ml="80px" mt="50px">
+            <RadioGroup ml="80px" mt="50px" onChange={setDuvida} value={duvida}>
               <HStack align="center">
                 <Flex 
                   flex=".5" 
@@ -39,7 +39,7 @@ export default function Home() {
                   align="center" 
                   px="20px"
                 >
-                  <Radio colorScheme="teal" value="1" size="lg" name="" onChange={() => setDuvida(true)}>
+                  <Radio colorScheme="teal" value="1" size="lg" name="">
                     <Text fontSize="28px">Tive Dúvidas</Text>
                   </Radio>
                 </Flex>
@@ -51,7 +51,7 @@ export default function Home() {
                   align="center" 
                   px="20px"
                 >
-                  <Radio colorScheme="teal" value="2" fontSize="28px" size="lg" onChange={() => setDuvida(false)}>
+                  <Radio colorScheme="teal" value="2" fontSize="28px" size="lg">
                     <Text fontSize="28px">Não tive Dúvidas</Text>
                   </Radio>
                 </Flex>
@@ -109,6 +109,7 @@ export default function Home() {
         )}
       </Layout>
       <Footer step={step} firstStep={1} lastStep={2} nextStep={() => setStep(step+1)} previousStep={() => setStep(step-1)} finishStep={() => setStep(step+1)} />
+      <ModalFinish isOpen={isOpen} onClose={onClose} onOpen={onOpen} />
     </Box>
   )
 }
