@@ -47,25 +47,25 @@ export default function Home() {
               <HStack align="center">
                 <Flex 
                   flex=".5" 
-                  bg={duvida ? 'rgba(96, 199, 175, 0.1)' : ''} 
-                  border={duvida ? "1px solid #60C7AF" : '1px solid #E5E5E5'}
+                  bg={duvida === '1' ? 'rgba(96, 199, 175, 0.1)' : ''} 
+                  border={duvida === '1' ? "1px solid #60C7AF" : '1px solid #E5E5E5'}
                   h="80px" 
                   align="center" 
                   px="20px"
                 >
-                  <Radio colorScheme="teal" value="1" size="lg" name="">
+                  <Radio colorScheme="teal" value="1" size="lg" name="" w="100%">
                     <Text fontSize="28px">Tive Dúvidas</Text>
                   </Radio>
                 </Flex>
                 <Flex 
                   flex=".5" 
-                  bg={!duvida ? 'rgba(96, 199, 175, 0.1)' : ''} 
-                  border={!duvida ? "1px solid #60C7AF" : '1px solid #E5E5E5'}
+                  bg={duvida === '2' ? 'rgba(96, 199, 175, 0.1)' : ''} 
+                  border={duvida === '2' ? "1px solid #60C7AF" : '1px solid #E5E5E5'}
                   h="80px" 
                   align="center" 
                   px="20px"
                 >
-                  <Radio colorScheme="teal" value="2" fontSize="28px" size="lg">
+                  <Radio colorScheme="teal" value="2" fontSize="28px" size="lg" w="100%">
                     <Text fontSize="28px">Não tive Dúvidas</Text>
                   </Radio>
                 </Flex>
