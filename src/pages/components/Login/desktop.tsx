@@ -6,6 +6,7 @@ import { api } from "../../../services/api";
 import ChackraInput from "../Input";
 import { LoginFormData } from "./interfaces";
 import { loginFormSchema } from "./schema";
+import { useAuth } from '../../../contexts/AuthContext';
 
 export function LoginDesktop() {
   const toast = useToast();
@@ -13,27 +14,32 @@ export function LoginDesktop() {
     resolver: yupResolver(loginFormSchema)
   });
 
+  const { signIn } = useAuth();
+
   const handleLogin: SubmitHandler<LoginFormData> = async (values) => {
-    try {
-      const {data} = await api.get(`api/public/aluno/?dsc_matricula=${values.matricula}&format=json`)
+
+    await signIn(values);
+
+    // try {
+    //   const {data} = await api.get(`api/public/aluno/?dsc_matricula=${values.matricula}&format=json`)
       
-      console.log(data)
+    //   console.log(data)
 
-      if (!data.length) {
-        toast({
-          title: 'Matrícula não encontrada!',
-          status: 'error',
-          duration: 9000,
-          isClosable: true
-        })
-        return;
-      }
+    //   if (!data.length) {
+    //     toast({
+    //       title: 'Matrícula não encontrada!',
+    //       status: 'error',
+    //       duration: 9000,
+    //       isClosable: true
+    //     })
+    //     return;
+    //   }
 
-      Router.push('/home');
+    //   Router.push('/home');
 
-    } catch (err) {
-      console.log(err)
-    }
+    // } catch (err) {
+    //   console.log(err)
+    // }
 
   }
 

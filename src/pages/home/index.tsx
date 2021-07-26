@@ -5,9 +5,13 @@ import { Layout } from "../components/Layout";
 import { InputDate } from "../components/InputDate";
 import { Footer } from "../components/Footer";
 import { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function Home() {
   const [step, setStep] = useState(1);
+  const { user } = useAuth();
+
+  console.log(user);
 
   return (
     <Box h="100vh">
@@ -15,7 +19,7 @@ export default function Home() {
       <Layout>
         {step === 1 && (
           <Box>
-            <Text fontSize="28px" ml="40px" mt="35px">Olá Flávio, bem vindo!</Text>
+            <Text fontSize="28px" ml="40px" mt="35px">Olá {user.dsc_nome_completo}, bem vindo!</Text>
             <Flex justify="space-between" align="center" ml="60px" mt="95px">
               <Box flex=".5">
                 <Text fontSize="28px">Conta pra gente, como foi seu dia?</Text>
