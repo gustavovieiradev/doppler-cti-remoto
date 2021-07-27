@@ -1,6 +1,6 @@
 import { useBreakpointValue, Box } from "@chakra-ui/react";
-import { LoginDesktop } from './components/Login/desktop';
-import { LoginMobile } from "./components/Login/mobile";
+import { LoginDesktop } from '../components/Login/desktop';
+import { LoginMobile } from "../components/Login/mobile";
 
 export default function Login() {
 

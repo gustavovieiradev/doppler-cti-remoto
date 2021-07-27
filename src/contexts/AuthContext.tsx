@@ -9,6 +9,7 @@ interface User {
   dsc_nome_completo: string;
   dsc_matricula: string;
   dsc_cpf: string;
+  id: number;
 }
 
 interface AuthProviderProps {
@@ -33,7 +34,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User>();
   const isAuthenticated = !!user;
   const toast = useToast();
-
+  
   useEffect(() => {
     const { 'nextauth.user': cookieUser } = parseCookies();
 

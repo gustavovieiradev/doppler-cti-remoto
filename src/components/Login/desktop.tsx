@@ -2,11 +2,10 @@ import Router from 'next/router';
 import { Flex, Image, Heading, Stack, Checkbox, Button, useToast } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { api } from "../../../services/api";
 import ChackraInput from "../Input";
 import { LoginFormData } from "./interfaces";
 import { loginFormSchema } from "./schema";
-import { useAuth } from '../../../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 export function LoginDesktop() {
   const toast = useToast();
@@ -17,30 +16,7 @@ export function LoginDesktop() {
   const { signIn } = useAuth();
 
   const handleLogin: SubmitHandler<LoginFormData> = async (values) => {
-
     await signIn(values);
-
-    // try {
-    //   const {data} = await api.get(`api/public/aluno/?dsc_matricula=${values.matricula}&format=json`)
-      
-    //   console.log(data)
-
-    //   if (!data.length) {
-    //     toast({
-    //       title: 'Matrícula não encontrada!',
-    //       status: 'error',
-    //       duration: 9000,
-    //       isClosable: true
-    //     })
-    //     return;
-    //   }
-
-    //   Router.push('/home');
-
-    // } catch (err) {
-    //   console.log(err)
-    // }
-
   }
 
   const { errors } = formState;

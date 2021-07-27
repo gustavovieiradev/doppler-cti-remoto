@@ -4,7 +4,7 @@ interface FooterProps {
   step: number;
   nextStep: () => void;
   previousStep: () => void;
-  finishStep: () => void;
+  finishStep: () => Promise<void>;
   firstStep: number;
   lastStep: number;
 }

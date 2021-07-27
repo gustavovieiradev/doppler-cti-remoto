@@ -4,10 +4,10 @@ import dynamic from 'next/dynamic'
 import { Flex, Image, Stack, Checkbox, Button, Box, Text, useToast } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { api } from "../../../services/api";
 // import { ChackraInput } from "../Input";
 import { LoginFormData } from "./interfaces";
 import { loginFormSchema } from "./schema";
+import { api } from '../../services/api';
 
 const ChackraInput = dynamic(
   () => import('../Input'),
