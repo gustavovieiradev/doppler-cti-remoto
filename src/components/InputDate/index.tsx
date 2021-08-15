@@ -5,13 +5,17 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useState } from "react";
 import { format } from "date-fns";
 
+interface InputDateProps {
+  setDate?: (date: any) => void
+}
 
-export function InputDate() {
+export function InputDate({setDate = () => {}}: InputDateProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const handleChange = (e) => {
     setIsOpen(!isOpen);
     setCurrentDate(e);
+    setDate(currentDate)
   };
   const handleClick = (e) => {
     e.preventDefault();
