@@ -61,14 +61,12 @@ export default function Home() {
 
   async function finishStep() {
     try {
-      const date = new Date('2021-07-26');
-      const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${date.toISOString()}&criador=&ano_letivo=2021`)
+      // const date = new Date('2021-07-26');
+      // const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${date.toISOString()}&criador=&ano_letivo=2021`)
   
-      const lastItem = data[data.length - 1];
+      // const lastItem = data[data.length - 1];
   
       const questionFilter = questoes.filter(q => !!q.value);
-
-      console.log(questionFilter);
 
       for (let i = 0; i < questionFilter.length; i++) {
         await api.post('api/public/duvida/', {
