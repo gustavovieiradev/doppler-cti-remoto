@@ -4,27 +4,23 @@ import dynamic from 'next/dynamic'
 import { Flex, Image, Stack, Checkbox, Button, Box, Text, useToast } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SubmitHandler, useForm } from "react-hook-form";
-// import { ChackraInput } from "../Input";
+import ChackraInput  from "../Input";
 import { LoginFormData } from "./interfaces";
 import { loginFormSchema } from "./schema";
 import { api } from '../../services/api';
-
-const ChackraInput = dynamic(
-  () => import('../Input'),
-  { ssr: false }
-)
+import { useState } from 'react';
 
 export function LoginMobile() {
   const toast = useToast();
   const { register, handleSubmit, formState } = useForm({
     resolver: yupResolver(loginFormSchema)
   });
+  const [loading, setLoading] = useState(false);
 
   const handleLogin: SubmitHandler<LoginFormData> = async (values) => {
     try {
+      setLoading(true)
       const {data} = await api.get(`api/public/aluno/?dsc_matricula=${values.matricula}&format=json`)
-      
-      console.log(data)
 
       if (!data.length) {
         toast({
@@ -33,12 +29,16 @@ export function LoginMobile() {
           duration: 9000,
           isClosable: true
         })
+        setLoading(false)
         return;
       }
+
+      setLoading(true)
 
       Router.push('/home');
 
     } catch (err) {
+      setLoading(false)
       console.log(err)
     }
 

@@ -14,8 +14,8 @@ export const theme = extendTheme({
   styles: {
     global: {
       body: {
-        bg: '#E5E5E5',
-        color: 'black'
+        color: 'black',
+        lineHeight: '33px'
       }
     }
   }

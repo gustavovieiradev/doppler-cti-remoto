@@ -1,8 +1,9 @@
-import { Box, Text, Flex, HStack, RadioGroup, Radio, VStack, useDisclosure, SimpleGrid, Select, Collapse } from "@chakra-ui/react";
+import { Box, Text, Flex, HStack, RadioGroup, Radio, VStack, useDisclosure, SimpleGrid, Select, Collapse, useBreakpointValue } from "@chakra-ui/react";
 import { BsChevronCompactDown } from 'react-icons/bs';
 import { Header } from "../../components/Header";
 import { Layout } from "../../components/Layout";
 import { InputDate } from "../../components/InputDate";
+import { InputDateMobile } from "../../components/InputDate/mobile";
 import { Footer } from "../../components/Footer";
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
@@ -47,6 +48,12 @@ export default function Home() {
   const [idDisciplina, setIdDisciplina] = useState<number>();
   const [dateCti, setDateCti] = useState(new Date());
   const [questoes, setQuestoes] = useState<Questao[]>([]);
+
+  const isWideVersion: boolean = useBreakpointValue({
+    base: false,
+    lg: true,
+    md: true,
+  })
 
   useEffect(() => {
 
@@ -159,36 +166,36 @@ export default function Home() {
 
 
   return (
-    <Box h="100vh">
-      <Header />
-      <Layout>
+    <Box h="100vh" bg={isWideVersion ? '#E5E5E5' : '#fff' }>
+      {isWideVersion && <Header />}
+      
+      <Layout isWideVersion={isWideVersion}>
         {step === 1 && (
           <Box>
-            <Text fontSize="28px" ml="40px" mt="35px">Olá {user?.dsc_nome_completo}, bem vindo!</Text>
-            <Flex justify="space-between" align="center" ml="60px" mt="95px" alignItems="flex-start">
-              <Box flex=".5">
+            <Text fontSize="28px" ml={["13px", "40px"]} mt={["16px", "35px"]} >Olá {user?.dsc_nome_completo}, bem vindo!</Text>
+            <Flex>
+              <SimpleGrid columns={[1,2, 2]} ml={["32px", "60px"]} mt={["35px", "95px"]} w={['226px', "100%"]}>
                 <Text fontSize="28px">Conta pra gente, como foi seu dia?</Text>
-              </Box>
-              <Box flex=".5">
-                <InputDate setDate={setDateCti} />
-              </Box>
+                {isWideVersion && (
+                  <InputDate setDate={setDateCti} />
+                )}
+              </SimpleGrid>
             </Flex>
-            <RadioGroup ml="80px" mt="50px" onChange={setDuvida} value={duvida}>
-              <HStack align="center">
+            <RadioGroup ml={["35px", "80px"]} mt="50px" onChange={setDuvida} value={duvida} mr={['35px', '0', '0']} mb="50px">
+              <SimpleGrid columns={[1,2,2]}  spacing={["18px", "0", "0"]}>
                 <Flex 
-                  flex=".5" 
                   bg={duvida === '1' ? 'rgba(96, 199, 175, 0.1)' : ''} 
                   border={duvida === '1' ? "1px solid #60C7AF" : '1px solid #E5E5E5'}
                   h="80px" 
                   align="center" 
                   px="20px"
+                  mr={["0", "0", "50px"]}
                 >
                   <Radio colorScheme="teal" value="1" size="lg" name="" w="100%">
                     <Text fontSize="28px">Tive Dúvidas</Text>
                   </Radio>
                 </Flex>
                 <Flex  
-                  flex=".5" 
                   bg={duvida === '2' ? 'rgba(96, 199, 175, 0.1)' : ''} 
                   border={duvida === '2' ? "1px solid #60C7AF" : '1px solid #E5E5E5'}
                   h="80px" 
@@ -199,20 +206,25 @@ export default function Home() {
                     <Text fontSize="28px">Não tive Dúvidas</Text>
                   </Radio>
                 </Flex>
-              </HStack>
+              </SimpleGrid>
             </RadioGroup>
+            {!isWideVersion && (
+              <Flex align="center" justify="center">
+                <InputDateMobile setDate={setDateCti} />
+              </Flex>
+            )}
           </Box>
         )}
         {step === 2 && (
           <Box>
-            <Text fontSize="28px" ml="40px" mt="35px">
+            <Text fontSize="28px" ml={["15px", "40px"]} mt={["15px", "35px"]}>
               Você selecionou 
               <Text>o CTI do dia </Text>
               <Text fontWeight="bold">{format(dateCti, 'dd/MM/yyyy')}</Text>
             </Text>
-            <Text ml="60px" mt="95px" fontSize="28px" fontWeight="bold">Em quais exercícios você teve dúvidas?</Text>
+            <Text ml={["15px", "60px"]} mt={["15px", "95px"]} fontSize="28px" fontWeight="bold">Em quais exercícios você teve dúvidas?</Text>
 
-            <SimpleGrid columns={2} spacing={10} ml="60px" mt="50px" mr="60px">
+            <SimpleGrid columns={2} spacing={10} ml={["24px", "60px"]} mt="50px" mr={["24px", "60px"]}>
               <Select placeholder="Selecione a disciplina" onChange={(ev) => setIdDisciplina(Number(ev.target.value))}>
                 {disciplinas?.map(disciplina => (
                   <option value={disciplina.id} key={disciplina.id}>{disciplina.dsc_disciplina}</option>
@@ -227,7 +239,7 @@ export default function Home() {
 
             {disciplinasSelected.length > 0 && disciplinasSelected.map((item, exD) => (
               <div key={item.id}>
-                <Box px="80px" onClick={() => openDisciplina(exD)} cursor="pointer">
+                <Box px={["24px", "80px"]} onClick={() => openDisciplina(exD)} cursor="pointer">
                   <Flex borderBottom="1px solid #60C7AF" mt="48px" pb="10px" justify="space-between" align="center">
                     <Text fontSize="24px" fontWeight="bold">{item.dsc_disciplina}</Text>
                     <BsChevronCompactDown size={30}/>
@@ -235,27 +247,27 @@ export default function Home() {
                 </Box>
                 <Collapse in={item.open}>
                   {questoes?.length > 0 && questoes.filter(q => q.idDisciplina === item.id).map((questM, ix) => (
-                    <Box border="2px solid #E5E5E5" p="25px" mt="25px" ml="90px" mr="90px" key={questM.id}>
+                    <Box border="2px solid #E5E5E5" p="25px" mt="25px" ml={["24px", "90px"]} mr={["24px", "90px"]} key={questM.id}>
                       <Flex justify="space-between" align="center" onClick={() => openQuestao(ix)} cursor="pointer">
                         <Text fontSize="28px" fontWeight="bold">{questM.dsc_questao}</Text>
                         <BsChevronCompactDown size={30}/>
                       </Flex>
                       <Collapse in={questM.open}>
-                        <RadioGroup ml="80px" mt="50px" onChange={(ev) => selectedOptions(ev, ix)}>
+                        <RadioGroup mt="50px" onChange={(ev) => selectedOptions(ev, ix)}>
                           <VStack align="center" justify="center" mt="20px">
-                            <Flex bg={questM.value === 1 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 1 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" width="710px" >
+                            <Flex bg={questM.value === 1 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 1 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%" >
                               <Radio colorScheme="teal" value="1" size="lg">
-                                <Text fontSize="28px">Foram sanadas</Text>
+                                <Text fontSize={["16px", "28px"]}>Foram sanadas</Text>
                               </Radio>
                             </Flex>
-                            <Flex bg={questM.value === 2 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 2 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%" width="710px">
+                            <Flex bg={questM.value === 2 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 2 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%">
                               <Radio colorScheme="teal" value="2" fontSize="28px" size="lg">
-                                <Text fontSize="28px">Acionei a monitoria mas continuo em dúvida</Text>
+                                <Text fontSize={["16px", "28px"]} lineHeight="21px">Acionei a monitoria mas continuo em dúvida</Text>
                               </Radio>
                             </Flex>
-                            <Flex bg={questM.value === 3 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 3 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%" width="710px">
+                            <Flex bg={questM.value === 3 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 3 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%" >
                               <Radio colorScheme="teal" value="3" fontSize="28px" size="lg">
-                                <Text fontSize="28px">Não consegui resolver o exercício</Text>
+                                <Text fontSize={["16px", "28px"]} lineHeight="21px">Não consegui resolver o exercício</Text>
                               </Radio>
                             </Flex>
                           </VStack>
