@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "predeploy": "pm2 delete next",
+    "deploy": "npm run build && pm2 start npm --name \"next\" -- start"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.6.4",
