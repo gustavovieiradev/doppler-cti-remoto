@@ -61,6 +61,7 @@ export default function Home() {
   const [questoesOriginal, setQuestoesOriginal] = useState<Questao[]>([]);
   const [conteudosSelecionado, setConteudosSelecionados] = useState<Conteudo[]>([]);
   const [conteudosSelecionadoOriginal, setConteudosSelecionadosOriginal] = useState<Conteudo[]>([]);
+  const [conteudosFiltro, setConteudosFiltro] = useState<string[]>([]);
   
 
   const isWideVersion: boolean = useBreakpointValue({
@@ -184,6 +185,7 @@ export default function Home() {
       const conteudo = conteudos.find(d => d.id === idConteudo)
       setConteudosSelecionados([...conteudosSelecionado, {...conteudo, disciplina: idDisciplina}])
       setConteudosSelecionadosOriginal([...conteudosSelecionadoOriginal, {...conteudo, disciplina: idDisciplina}])
+      setConteudosFiltro([...conteudosFiltro, conteudo.dsc_conteudo])
     }
 
     const questExists = questoes.filter(q => q.idConteudo === idConteudo);
@@ -326,8 +328,10 @@ export default function Home() {
                 </Select>
               </FormControl>
             </Stack>
-
-            <Flex align="center" justify="center" mt="20px">
+            <Flex align="center" justify="center" mt="20px" flexDirection="column">
+              {conteudosFiltro.length > 0 && (
+                <Text>Conteúdos selecionados: {conteudosFiltro.join()}</Text>
+              )}
               <Button type="button" colorScheme="teal" onClick={selectedConteudo} disabled={!idDisciplina || !idConteudo} isLoading={loadingFiltros}>FILTRAR</Button>
             </Flex>
 
