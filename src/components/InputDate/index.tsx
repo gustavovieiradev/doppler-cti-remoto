@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useState } from "react";
 import { format } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 
 interface InputDateProps {
   setDate?: (date: any) => void
@@ -14,8 +15,9 @@ export function InputDate({setDate = () => {}}: InputDateProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const handleChange = (e) => {
     setIsOpen(!isOpen);
-    setCurrentDate(e);
-    setDate(e)
+    const customDateCti = zonedTimeToUtc(e, 'America/Sao_Paulo');
+    setCurrentDate(customDateCti);
+    setDate(customDateCti)
   };
   const handleClick = (e) => {
     e.preventDefault();

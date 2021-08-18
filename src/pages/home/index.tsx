@@ -1,4 +1,4 @@
-import { Box, Text, Flex, HStack, RadioGroup, Radio, VStack, useDisclosure, SimpleGrid, Select, Collapse, useBreakpointValue, FormControl, FormLabel, Stack, Button, InputGroup, InputLeftElement, InputRightElement, Input, Spinner } from "@chakra-ui/react";
+import { Box, Text, Flex, HStack, RadioGroup, Radio, VStack, useDisclosure, SimpleGrid, Select, Collapse, useBreakpointValue, FormControl, FormLabel, Stack, Button, InputGroup, InputLeftElement, InputRightElement, Input, Spinner, useToast } from "@chakra-ui/react";
 import { BsChevronCompactDown, BsChevronCompactRight } from 'react-icons/bs';
 import { BiSearch } from 'react-icons/bi';
 import { Header } from "../../components/Header";
@@ -62,6 +62,7 @@ export default function Home() {
   const [conteudosSelecionado, setConteudosSelecionados] = useState<Conteudo[]>([]);
   const [conteudosSelecionadoOriginal, setConteudosSelecionadosOriginal] = useState<Conteudo[]>([]);
   const [conteudosFiltro, setConteudosFiltro] = useState<string[]>([]);
+  const toast = useToast();
   
 
   const isWideVersion: boolean = useBreakpointValue({
@@ -96,11 +97,12 @@ export default function Home() {
       const formatCustomDateCti = format(customDateCti, "yyyy-MM-dd'T'00:00:00.000'Z'");
 
       const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${formatCustomDateCti}&criador=&ano_letivo=2021`)
-      
+
       let ctiId = 0;
 
       if (!data.length) {
         const cti = await api.post(`/api/public/cti/`, {
+          criador: 1,
           dsc_cti: 'CTI 01',
           dat_cti: formatCustomDateCti
         })
@@ -134,14 +136,17 @@ export default function Home() {
 
       setStep(1);
       if (isAfter(customDateCti, dateNine)) {
+        console.log(customDateCti)
         onOpenHour();
         return;  
       }
       if (isBefore(customDateCti, dateBefore)) {
+        console.log(2222)
         onOpenHour();
         return;  
       }
       setMessageModal('Dúvidas enviadas!')
+      onCloseHour();
       onOpen();
     } catch(err) {
       console.log(err);
@@ -171,6 +176,18 @@ export default function Home() {
   async function selectedConteudo() {
     setLoadingFiltros(true);
     const {data} = await api.get(`/api/public/questao/?ano_letivo=2021&conteudo=${idConteudo}`);
+
+    if (!data.length) {
+      toast({
+        title: 'Atenção!',
+        description: 'Nenhuma questão cadastrada para esse conteúdo',
+        status: 'warning',
+        duration: 9000,
+        isClosable: true
+      })
+      setLoadingFiltros(false)
+      return;
+    }
     
     const disciplinaExists = disciplinasSelected.find(d => d.id === idDisciplina)
 
@@ -218,11 +235,13 @@ export default function Home() {
     setDisciplinasSelected(newArray);
   }, [disciplinasSelected])
 
-  const openQuestao = useCallback((ix) => {
+  const openQuestao = useCallback((question) => {
     let newArray = [...questoes];
+    const ix = questoes.findIndex(c => question.id === c.id)
     newArray[ix].open = !questoes[ix].open ? true : false
     console.log(newArray[ix].open)
     setQuestoes(newArray);
+    setQuestoesOriginal(newArray);
   }, [questoes])
 
   const openConteudo = useCallback((cc) => {
@@ -368,12 +387,12 @@ export default function Home() {
                       <Collapse in={cc.open}>  
                         {questoes?.length > 0 && questoes.filter(q => q.idConteudo == cc.id).map((questM, ix) => (
                           <Box border="2px solid #E5E5E5" p="25px" mt="25px" ml={["24px", "90px"]} mr={["24px", "90px"]} key={questM.id}>
-                            <Flex justify="space-between" align="center" onClick={() => openQuestao(ix)} cursor="pointer">
+                            <Flex justify="space-between" align="center" onClick={() => openQuestao(questM)} cursor="pointer">
                               <Text fontSize="28px" fontWeight="bold">{questM.dsc_questao}</Text>
                               {questM?.open ? <BsChevronCompactDown size={30}/> : <BsChevronCompactRight size={30}/>}
                             </Flex>
                             <Collapse in={questM.open}>
-                              <RadioGroup mt="50px" onChange={(ev) => selectedOptions(ev, ix)}>
+                              <RadioGroup mt="50px" onChange={(ev) => selectedOptions(ev, ix)} value={String(questM.value)}>
                                 <VStack align="center" justify="center" mt="20px">
                                   <Flex bg={questM.value === 1 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 1 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%" >
                                     <Radio colorScheme="teal" value="1" size="lg">
