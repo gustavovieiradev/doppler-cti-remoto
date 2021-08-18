@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useState } from "react";
 import { format } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 
 interface InputDateProps {
   setDate?: (date: any) => void
@@ -11,11 +12,12 @@ interface InputDateProps {
 
 export function InputDateMobile({setDate = () => {}}: InputDateProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(zonedTimeToUtc(new Date(), 'America/Sao_Paulo'));
   const handleChange = (e) => {
     setIsOpen(!isOpen);
-    setCurrentDate(e);
-    setDate(e)
+    const customDateCti = zonedTimeToUtc(e, 'America/Sao_Paulo');
+    setCurrentDate(customDateCti);
+    setDate(customDateCti)
   };
   const handleClick = (e) => {
     e.preventDefault();
@@ -24,7 +26,7 @@ export function InputDateMobile({setDate = () => {}}: InputDateProps) {
 
   return (
     <Flex direction="column">
-      {isOpen && (<DatePicker inline onChange={handleChange} selected={currentDate}/>)}
+      {isOpen && (<DatePicker inline onChange={handleChange} selected={currentDate} maxDate={currentDate}/>)}
       <HStack height="80px" justify="space-between" onClick={handleClick} borderBottomWidth="2px" borderBottomStyle="dashed" borderBottomColor="black">
         <Flex align="center" justify="center">
           <FiCalendar size={24}/>

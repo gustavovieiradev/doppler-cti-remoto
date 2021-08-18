@@ -12,7 +12,7 @@ interface InputDateProps {
 
 export function InputDate({setDate = () => {}}: InputDateProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(zonedTimeToUtc(new Date(), 'America/Sao_Paulo'));
   const handleChange = (e) => {
     setIsOpen(!isOpen);
     const customDateCti = zonedTimeToUtc(e, 'America/Sao_Paulo');
@@ -35,7 +35,7 @@ export function InputDate({setDate = () => {}}: InputDateProps) {
             <FiCalendar size={40}/>
           </Flex>
         </Flex>
-        {isOpen && <DatePicker inline onChange={handleChange} selected={currentDate} />}
+        {isOpen && <DatePicker inline onChange={handleChange} selected={currentDate} maxDate={currentDate} />}
       </Box>
     </>
   )
