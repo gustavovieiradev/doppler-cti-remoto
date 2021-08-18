@@ -1,4 +1,4 @@
-import { Flex, Link, Box, Button } from "@chakra-ui/react";
+import { Flex, Link, Box, Button, Spinner } from "@chakra-ui/react";
 
 interface FooterProps {
   step: number;
@@ -7,9 +7,10 @@ interface FooterProps {
   finishStep: () => Promise<void>;
   firstStep: number;
   lastStep: number;
+  loading?: boolean
 }
 
-export function Footer({step, nextStep, finishStep, firstStep, lastStep, previousStep}: FooterProps) {
+export function Footer({step, nextStep, finishStep, firstStep, lastStep, previousStep, loading = false}: FooterProps) {
   let space = 'flex-end';
   if (step > 1 && (step >= firstStep && step < lastStep)) {
     space = 'space-between';
@@ -33,9 +34,13 @@ export function Footer({step, nextStep, finishStep, firstStep, lastStep, previou
         </Button>
       )}
       {step === lastStep && (
-        <Button color="teal.500" fontSize="24px" variant="link" fontWeight="normal" onClick={finishStep}>
-          SALVAR
-        </Button>
+        <>
+          {loading ? <Spinner /> : (
+            <Button color="teal.500" fontSize="24px" variant="link" fontWeight="normal" onClick={finishStep}>
+              SALVAR
+            </Button>
+          )}
+        </>
       )}
     </Flex>
   )

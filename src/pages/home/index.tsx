@@ -55,6 +55,7 @@ export default function Home() {
   const [idDisciplina, setIdDisciplina] = useState<number>();
   const [loadingFiltros, setLoadingFiltros] = useState(false);
   const [loadingSearch, setLoadingSearch] = useState(false);
+  const [loadingSave, setLoadingSave] = useState(false);
   const [idConteudo, setIdConteudo] = useState<number>();
   const [dateCti, setDateCti] = useState(new Date());
   const [questoes, setQuestoes] = useState<Questao[]>([]);
@@ -89,6 +90,7 @@ export default function Home() {
 
   async function finishStep() {
     try {
+      setLoadingSave(true);
       const today = new Date();
       const dateBefore =  new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
       const dateNine = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 21, 0, 0);
@@ -135,6 +137,10 @@ export default function Home() {
       // onOpen();
 
       setStep(1);
+      clearData();
+      setLoadingSave(false);
+      const dt = zonedTimeToUtc(new Date(), 'America/Sao_Paulo');
+      setDateCti(dt)
       if (isAfter(customDateCti, dateNine)) {
         console.log(customDateCti)
         onOpenHour();
@@ -149,7 +155,14 @@ export default function Home() {
       onCloseHour();
       onOpen();
     } catch(err) {
-      console.log(err);
+      setLoadingSave(false);
+      toast({
+        title: 'Atenção!',
+        description: 'Ocorreu um erro ao enviar dúvidas',
+        status: 'warning',
+        duration: 9000,
+        isClosable: true
+      })
     }
   }
 
@@ -172,6 +185,17 @@ export default function Home() {
       loadConteudos();
     }
   }, [idDisciplina])
+
+  function clearData() {
+    setDisciplinasSelected([]);
+    setConteudosSelecionados([])
+    setConteudosSelecionadosOriginal([])
+    setConteudosFiltro([])
+    setQuestoes([]);
+    setQuestoesOriginal([]);
+    setIdDisciplina(null);
+    setIdConteudo(null);
+  }
 
   async function selectedConteudo() {
     setLoadingFiltros(true);
@@ -222,8 +246,9 @@ export default function Home() {
     setLoadingFiltros(false);
   }
 
-  const selectedOptions = useCallback((ev, ix) => {
+  const selectedOptions = useCallback((ev, question) => {
     let newArray = [...questoes];
+    const ix = questoes.findIndex(c => question.id === c.id)
     newArray[ix].value = Number(ev);
     setQuestoes(newArray);
     setQuestoesOriginal(newArray);
@@ -392,7 +417,7 @@ export default function Home() {
                               {questM?.open ? <BsChevronCompactDown size={30}/> : <BsChevronCompactRight size={30}/>}
                             </Flex>
                             <Collapse in={questM.open}>
-                              <RadioGroup mt="50px" onChange={(ev) => selectedOptions(ev, ix)} value={String(questM.value)}>
+                              <RadioGroup mt="50px" onChange={(ev) => selectedOptions(ev, questM)} value={String(questM.value)}>
                                 <VStack align="center" justify="center" mt="20px">
                                   <Flex bg={questM.value === 1 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 1 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%" >
                                     <Radio colorScheme="teal" value="1" size="lg">
@@ -429,7 +454,7 @@ export default function Home() {
           <div>3</div>
         )}
       </Layout>
-      <Footer step={step} firstStep={1} lastStep={2} nextStep={nextStep} previousStep={() => setStep(step-1)} finishStep={finishStep} />
+      <Footer step={step} firstStep={1} lastStep={2} nextStep={nextStep} previousStep={() => setStep(step-1)} finishStep={finishStep} loading={loadingSave} />
       <ModalFinish isOpen={isOpen} onClose={closeModal} onOpen={onOpen} message={messageModal} />
       <ModalHour isOpen={isOpenHour} onClose={onCloseHour} onOpen={onOpenHour} />
       {/* <ModalConteudo isOpen={IsOpenConteudo} onClose={onCloseConteudo} conteudos={conteudos} idDisciplina={idDisciplina} /> */}
