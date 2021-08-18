@@ -1,5 +1,6 @@
-import { Box, Text, Flex, HStack, RadioGroup, Radio, VStack, useDisclosure, SimpleGrid, Select, Collapse, useBreakpointValue, FormControl, FormLabel, Stack, Button } from "@chakra-ui/react";
+import { Box, Text, Flex, HStack, RadioGroup, Radio, VStack, useDisclosure, SimpleGrid, Select, Collapse, useBreakpointValue, FormControl, FormLabel, Stack, Button, InputGroup, InputLeftElement, InputRightElement, Input, Spinner } from "@chakra-ui/react";
 import { BsChevronCompactDown, BsChevronCompactRight } from 'react-icons/bs';
+import { BiSearch } from 'react-icons/bi';
 import { Header } from "../../components/Header";
 import { Layout } from "../../components/Layout";
 import { InputDate } from "../../components/InputDate";
@@ -27,11 +28,13 @@ interface Disciplina {
 interface Conteudo {
   id: number;
   dsc_conteudo: string;
+  disciplina: number;
+  open?: boolean;
 }
 
 interface Questao {
   id: number;
-  dsc_questao: number;
+  dsc_questao: string;
   idConteudo: number;
   idDisciplina: number;
   value?: number;
@@ -50,9 +53,15 @@ export default function Home() {
   const [conteudos, setConteudos] = useState<Conteudo[]>([]);
   // const { questoes } = useForm();
   const [idDisciplina, setIdDisciplina] = useState<number>();
+  const [loadingFiltros, setLoadingFiltros] = useState(false);
+  const [loadingSearch, setLoadingSearch] = useState(false);
   const [idConteudo, setIdConteudo] = useState<number>();
   const [dateCti, setDateCti] = useState(new Date());
   const [questoes, setQuestoes] = useState<Questao[]>([]);
+  const [questoesOriginal, setQuestoesOriginal] = useState<Questao[]>([]);
+  const [conteudosSelecionado, setConteudosSelecionados] = useState<Conteudo[]>([]);
+  const [conteudosSelecionadoOriginal, setConteudosSelecionadosOriginal] = useState<Conteudo[]>([]);
+  
 
   const isWideVersion: boolean = useBreakpointValue({
     base: false,
@@ -159,6 +168,7 @@ export default function Home() {
   }, [idDisciplina])
 
   async function selectedConteudo() {
+    setLoadingFiltros(true);
     const {data} = await api.get(`/api/public/questao/?ano_letivo=2021&conteudo=${idConteudo}`);
     
     const disciplinaExists = disciplinasSelected.find(d => d.id === idDisciplina)
@@ -166,6 +176,14 @@ export default function Home() {
     if (!disciplinaExists) {
       const disciplina = disciplinas.find(d => d.id === idDisciplina)
       setDisciplinasSelected([...disciplinasSelected, disciplina])
+    }
+
+    const conteudosExists = conteudosSelecionado.find(c => c.id === idConteudo)
+
+    if (!conteudosExists) {
+      const conteudo = conteudos.find(d => d.id === idConteudo)
+      setConteudosSelecionados([...conteudosSelecionado, {...conteudo, disciplina: idDisciplina}])
+      setConteudosSelecionadosOriginal([...conteudosSelecionadoOriginal, {...conteudo, disciplina: idDisciplina}])
     }
 
     const questExists = questoes.filter(q => q.idConteudo === idConteudo);
@@ -179,13 +197,17 @@ export default function Home() {
         }
       })
       setQuestoes([...questoes, ...questaoConst]);
+      setQuestoesOriginal([...questoes, ...questaoConst]);
     }
+
+    setLoadingFiltros(false);
   }
 
   const selectedOptions = useCallback((ev, ix) => {
     let newArray = [...questoes];
     newArray[ix].value = Number(ev);
     setQuestoes(newArray);
+    setQuestoesOriginal(newArray);
   }, [questoes])
 
   const openDisciplina = useCallback((ix) => {
@@ -200,6 +222,31 @@ export default function Home() {
     console.log(newArray[ix].open)
     setQuestoes(newArray);
   }, [questoes])
+
+  const openConteudo = useCallback((cc) => {
+    let newArray = [...conteudosSelecionado];
+    const ix = conteudosSelecionado.findIndex(c => cc.id === c.id)
+    newArray[ix].open = !conteudosSelecionado[ix].open ? true : false
+    console.log(newArray[ix].open)
+    console.log(ix);
+    setConteudosSelecionados(newArray);
+  }, [conteudosSelecionado])
+
+  const changeSearch = useCallback((search: string) => {
+    setLoadingSearch(true);
+    if (!search.length) {
+      setQuestoes(questoesOriginal)
+      setLoadingSearch(false);
+    }
+    
+    let questaoSearch = questoesOriginal.filter(item => item.dsc_questao.toLowerCase().indexOf(search.toLowerCase()) > -1);
+    setTimeout(() => {
+      setQuestoes(questaoSearch)
+      setLoadingSearch(false);
+    }, 300)
+
+  }, [questoesOriginal])
+
 
 
   return (
@@ -261,7 +308,7 @@ export default function Home() {
             </Text>
             <Text ml={["15px", "60px"]} mt={["15px", "95px"]} fontSize="28px" fontWeight="bold">Em quais exercícios você teve dúvidas?</Text>
 
-            <Stack direction="row" ml={["24px", "60px"]} mt="50px" mr={["24px", "60px"]}>
+            <Stack direction={["column", "row", "row"]} ml={["24px", "60px"]} mt="50px" mr={["24px", "60px"]}>
               <FormControl>
                 <FormLabel>Disciplina</FormLabel>
                 <Select placeholder="Selecione a disciplina" onChange={(ev) => setIdDisciplina(Number(ev.target.value))} focusBorderColor="teal.500">
@@ -281,7 +328,7 @@ export default function Home() {
             </Stack>
 
             <Flex align="center" justify="center" mt="20px">
-              <Button type="button" colorScheme="teal" onClick={selectedConteudo} disabled={!idDisciplina || !idConteudo}>FILTRAR</Button>
+              <Button type="button" colorScheme="teal" onClick={selectedConteudo} disabled={!idDisciplina || !idConteudo} isLoading={loadingFiltros}>FILTRAR</Button>
             </Flex>
 
             {disciplinasSelected.length > 0 && disciplinasSelected.map((item, exD) => (
@@ -294,34 +341,58 @@ export default function Home() {
                   </Flex>
                 </Box>
                 <Collapse in={item.open}>
-                  {questoes?.length > 0 && questoes.filter(q => q.idDisciplina === item.id).map((questM, ix) => (
-                    <Box border="2px solid #E5E5E5" p="25px" mt="25px" ml={["24px", "90px"]} mr={["24px", "90px"]} key={questM.id}>
-                      <Flex justify="space-between" align="center" onClick={() => openQuestao(ix)} cursor="pointer">
-                        <Text fontSize="28px" fontWeight="bold">{questM.dsc_questao}</Text>
-                        {questM?.open ? <BsChevronCompactDown size={30}/> : <BsChevronCompactRight size={30}/>}
-                      </Flex>
-                      <Collapse in={questM.open}>
-                        <RadioGroup mt="50px" onChange={(ev) => selectedOptions(ev, ix)}>
-                          <VStack align="center" justify="center" mt="20px">
-                            <Flex bg={questM.value === 1 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 1 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%" >
-                              <Radio colorScheme="teal" value="1" size="lg">
-                                <Text fontSize={["16px", "28px"]}>Foram sanadas</Text>
-                              </Radio>
+                  <Box px={["24px", "80px"]} mt="10px">
+                    <InputGroup>
+                      <InputRightElement
+                        pointerEvents="none"
+                        color="gray.300"
+                        fontSize="1.2em"
+                      >
+                        {loadingSearch ? <Spinner /> : <BiSearch color="gray.500" />}
+                      </InputRightElement>
+                      <Input placeholder="Pesquise por conteúdo ou questão" onChange={(ev) => changeSearch(ev.target.value)} />
+                    </InputGroup>
+                  </Box>
+                  {conteudosSelecionado?.length > 0 && conteudosSelecionado.filter(c => c.disciplina === item.id).map((cc, ixC) => (
+                    <div key={cc.id}>
+                      <Box ml={["24px", "90px"]} mr={["24px", "90px"]} onClick={() => openConteudo(cc)} cursor="pointer">
+                        <Flex mt="48px" pb="10px" justify="space-between" align="center">
+                          <Text fontSize="20px" fontWeight="bold">Conteúdo: {cc.dsc_conteudo}</Text>
+                          {cc?.open ? <BsChevronCompactDown size={30}/> : <BsChevronCompactRight size={30}/>}
+                        </Flex>
+                      </Box>
+                      <Collapse in={cc.open}>  
+                        {questoes?.length > 0 && questoes.filter(q => q.idConteudo == cc.id).map((questM, ix) => (
+                          <Box border="2px solid #E5E5E5" p="25px" mt="25px" ml={["24px", "90px"]} mr={["24px", "90px"]} key={questM.id}>
+                            <Flex justify="space-between" align="center" onClick={() => openQuestao(ix)} cursor="pointer">
+                              <Text fontSize="28px" fontWeight="bold">{questM.dsc_questao}</Text>
+                              {questM?.open ? <BsChevronCompactDown size={30}/> : <BsChevronCompactRight size={30}/>}
                             </Flex>
-                            <Flex bg={questM.value === 2 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 2 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%">
-                              <Radio colorScheme="teal" value="2" fontSize="28px" size="lg">
-                                <Text fontSize={["16px", "28px"]} lineHeight="21px">Acionei a monitoria mas continuo em dúvida</Text>
-                              </Radio>
-                            </Flex>
-                            <Flex bg={questM.value === 3 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 3 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%" >
-                              <Radio colorScheme="teal" value="3" fontSize="28px" size="lg">
-                                <Text fontSize={["16px", "28px"]} lineHeight="21px">Não consegui resolver o exercício</Text>
-                              </Radio>
-                            </Flex>
-                          </VStack>
-                        </RadioGroup>
+                            <Collapse in={questM.open}>
+                              <RadioGroup mt="50px" onChange={(ev) => selectedOptions(ev, ix)}>
+                                <VStack align="center" justify="center" mt="20px">
+                                  <Flex bg={questM.value === 1 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 1 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%" >
+                                    <Radio colorScheme="teal" value="1" size="lg">
+                                      <Text fontSize={["16px", "28px"]}>Foram sanadas</Text>
+                                    </Radio>
+                                  </Flex>
+                                  <Flex bg={questM.value === 2 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 2 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%">
+                                    <Radio colorScheme="teal" value="2" fontSize="28px" size="lg">
+                                      <Text fontSize={["16px", "28px"]} lineHeight="21px">Acionei a monitoria mas continuo em dúvida</Text>
+                                    </Radio>
+                                  </Flex>
+                                  <Flex bg={questM.value === 3 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 3 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%" >
+                                    <Radio colorScheme="teal" value="3" fontSize="28px" size="lg">
+                                      <Text fontSize={["16px", "28px"]} lineHeight="21px">Não consegui resolver o exercício</Text>
+                                    </Radio>
+                                  </Flex>
+                                </VStack>
+                              </RadioGroup>
+                            </Collapse>
+                          </Box>
+                        ))}
                       </Collapse>
-                    </Box>
+                    </div>
                   ))}
                 </Collapse> 
               </div>
