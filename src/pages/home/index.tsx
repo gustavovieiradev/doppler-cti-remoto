@@ -1,4 +1,4 @@
-import { Box, Text, Flex, HStack, RadioGroup, Radio, VStack, useDisclosure, SimpleGrid, Select, Collapse, useBreakpointValue } from "@chakra-ui/react";
+import { Box, Text, Flex, HStack, RadioGroup, Radio, VStack, useDisclosure, SimpleGrid, Select, Collapse, useBreakpointValue, FormControl, FormLabel, Stack, Button } from "@chakra-ui/react";
 import { BsChevronCompactDown, BsChevronCompactRight } from 'react-icons/bs';
 import { Header } from "../../components/Header";
 import { Layout } from "../../components/Layout";
@@ -50,6 +50,7 @@ export default function Home() {
   const [conteudos, setConteudos] = useState<Conteudo[]>([]);
   // const { questoes } = useForm();
   const [idDisciplina, setIdDisciplina] = useState<number>();
+  const [idConteudo, setIdConteudo] = useState<number>();
   const [dateCti, setDateCti] = useState(new Date());
   const [questoes, setQuestoes] = useState<Questao[]>([]);
 
@@ -77,16 +78,27 @@ export default function Home() {
 
   async function finishStep() {
     try {
-      console.log('dateCti', dateCti)
       const today = new Date();
       const dateBefore =  new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
       const dateNine = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 21, 0, 0);
       const customDateCti = zonedTimeToUtc(dateCti, 'America/Sao_Paulo');
-      const date = new Date('2021-07-26');
       
-      const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${date.toISOString()}&criador=&ano_letivo=2021`)
-  
-      const lastItem = data[data.length - 1];
+      const formatCustomDateCti = format(customDateCti, "yyyy-MM-dd'T'00:00:00.000'Z'");
+
+      const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${formatCustomDateCti}&criador=&ano_letivo=2021`)
+      
+      let ctiId = 0;
+
+      if (!data.length) {
+        const cti = await api.post(`/api/public/cti/`, {
+          dsc_cti: 'CTI 01',
+          dat_cti: formatCustomDateCti
+        })
+        ctiId = cti.data.id
+      } else {
+        const lastItem = data[data.length - 1];
+        ctiId = lastItem.id;
+      }
   
       const questionFilter = questoes.filter(q => !!q.value);
 
@@ -95,7 +107,7 @@ export default function Home() {
           dsc_duvida: questionFilter[i].value,
           aluno: user.id,
           questao: questionFilter[i].id,
-          cti: 1153
+          cti: ctiId
         });
       }
 
@@ -146,7 +158,7 @@ export default function Home() {
     }
   }, [idDisciplina])
 
-  async function selectedConteudo(idConteudo: number) {
+  async function selectedConteudo() {
     const {data} = await api.get(`/api/public/questao/?ano_letivo=2021&conteudo=${idConteudo}`);
     
     const disciplinaExists = disciplinasSelected.find(d => d.id === idDisciplina)
@@ -249,18 +261,28 @@ export default function Home() {
             </Text>
             <Text ml={["15px", "60px"]} mt={["15px", "95px"]} fontSize="28px" fontWeight="bold">Em quais exercícios você teve dúvidas?</Text>
 
-            <SimpleGrid columns={2} spacing={10} ml={["24px", "60px"]} mt="50px" mr={["24px", "60px"]}>
-              <Select placeholder="Selecione a disciplina" onChange={(ev) => setIdDisciplina(Number(ev.target.value))}>
-                {disciplinas?.map(disciplina => (
-                  <option value={disciplina.id} key={disciplina.id}>{disciplina.dsc_disciplina}</option>
-                ))}
-              </Select>
-              <Select placeholder="Selecione conteúdo" onChange={(ev) => selectedConteudo(Number(ev.target.value))}>
-                {conteudos?.map(conteudo => (
-                  <option value={conteudo.id} key={conteudo.id}>{conteudo.dsc_conteudo}</option>
-                ))}
-              </Select>
-            </SimpleGrid>
+            <Stack direction="row" ml={["24px", "60px"]} mt="50px" mr={["24px", "60px"]}>
+              <FormControl>
+                <FormLabel>Disciplina</FormLabel>
+                <Select placeholder="Selecione a disciplina" onChange={(ev) => setIdDisciplina(Number(ev.target.value))} focusBorderColor="teal.500">
+                  {disciplinas?.map(disciplina => (
+                    <option value={disciplina.id} key={disciplina.id}>{disciplina.dsc_disciplina}</option>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl>
+                <FormLabel>Conteúdo</FormLabel>
+                <Select placeholder="Selecione conteúdo" onChange={(ev) => setIdConteudo(Number(ev.target.value))} disabled={!idDisciplina} focusBorderColor="teal.500">
+                  {conteudos?.map(conteudo => (
+                    <option value={conteudo.id} key={conteudo.id}>{conteudo.dsc_conteudo}</option>
+                  ))}
+                </Select>
+              </FormControl>
+            </Stack>
+
+            <Flex align="center" justify="center" mt="20px">
+              <Button type="button" colorScheme="teal" onClick={selectedConteudo} disabled={!idDisciplina || !idConteudo}>FILTRAR</Button>
+            </Flex>
 
             {disciplinasSelected.length > 0 && disciplinasSelected.map((item, exD) => (
               <div key={item.id}>
