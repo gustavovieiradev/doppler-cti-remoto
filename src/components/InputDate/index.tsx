@@ -15,7 +15,7 @@ export function InputDate({setDate = () => {}}: InputDateProps) {
   const handleChange = (e) => {
     setIsOpen(!isOpen);
     setCurrentDate(e);
-    setDate(currentDate)
+    setDate(e)
   };
   const handleClick = (e) => {
     e.preventDefault();
@@ -24,15 +24,17 @@ export function InputDate({setDate = () => {}}: InputDateProps) {
 
   return (
     <>
-      <Flex border="1px solid #E5E5E5;" bg="rgba(255, 255, 255, 0.1);" height="80px" justify="space-between" onClick={handleClick}>
-        <Flex flex=".8" align="center" justify="center">
-          <Text fontSize="28px">{format(currentDate, "dd/MM/yyyy")}</Text>
+      <Box>
+        <Flex border="1px solid #E5E5E5;" bg="rgba(255, 255, 255, 0.1);" height="80px" justify="space-between" onClick={handleClick}>
+          <Flex flex=".8" align="center" justify="center">
+            <Text fontSize="28px">{format(currentDate, "dd/MM/yyyy")}</Text>
+          </Flex>
+          <Flex w="80px" h="80px" bg="teal.500" align="center" justify="center">
+            <FiCalendar size={40}/>
+          </Flex>
         </Flex>
-        <Flex w="80px" h="80px" bg="teal.500" align="center" justify="center">
-          <FiCalendar size={40}/>
-        </Flex>
-      </Flex>
-      {isOpen && <DatePicker inline onChange={handleChange} selected={currentDate} />}
+        {isOpen && <DatePicker inline onChange={handleChange} selected={currentDate} />}
+      </Box>
     </>
   )
 }

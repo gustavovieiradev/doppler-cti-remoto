@@ -1,5 +1,5 @@
 import { Box, Text, Flex, HStack, RadioGroup, Radio, VStack, useDisclosure, SimpleGrid, Select, Collapse, useBreakpointValue } from "@chakra-ui/react";
-import { BsChevronCompactDown } from 'react-icons/bs';
+import { BsChevronCompactDown, BsChevronCompactRight } from 'react-icons/bs';
 import { Header } from "../../components/Header";
 import { Layout } from "../../components/Layout";
 import { InputDate } from "../../components/InputDate";
@@ -13,8 +13,10 @@ import { api } from "../../services/api";
 import { ModalConteudo } from "../../components/ModalConteudo/ModalConteudo";
 import { FormProvider, useForm } from "../../contexts/FormContext";
 import { AxiosError } from "axios";
-import { format } from "date-fns";
+import { format, isAfter, isBefore, parseISO } from "date-fns";
 import { useCallback } from "react";
+import { zonedTimeToUtc } from 'date-fns-tz';
+import { ModalHour } from "../../components/ModalHour";
 
 interface Disciplina {
   id: number;
@@ -37,10 +39,12 @@ interface Questao {
 }
 
 export default function Home() {
+  const [messageModal, setMessageModal] = useState('Incrível, Parabéns!');
   const [duvida, setDuvida] = useState("1");
   const [step, setStep] = useState(1);
   const { user } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isOpenHour, onOpen: onOpenHour, onClose: onCloseHour } = useDisclosure();
   const [disciplinas, setDisciplinas] = useState<Disciplina[]>([]);
   const [disciplinasSelected, setDisciplinasSelected] = useState<Disciplina[]>([]);
   const [conteudos, setConteudos] = useState<Conteudo[]>([]);
@@ -66,12 +70,23 @@ export default function Home() {
 
   }, [])
 
+  function closeModal() {
+    onClose()
+    setMessageModal('Incrível, Parabéns!')
+  }
+
   async function finishStep() {
     try {
-      // const date = new Date('2021-07-26');
-      // const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${date.toISOString()}&criador=&ano_letivo=2021`)
+      console.log('dateCti', dateCti)
+      const today = new Date();
+      const dateBefore =  new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
+      const dateNine = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 21, 0, 0);
+      const customDateCti = zonedTimeToUtc(dateCti, 'America/Sao_Paulo');
+      const date = new Date('2021-07-26');
+      
+      const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${date.toISOString()}&criador=&ano_letivo=2021`)
   
-      // const lastItem = data[data.length - 1];
+      const lastItem = data[data.length - 1];
   
       const questionFilter = questoes.filter(q => !!q.value);
 
@@ -93,8 +108,19 @@ export default function Home() {
 
       // console.log(response);
 
-      onOpen();
+      // onOpen();
+
       setStep(1);
+      if (isAfter(customDateCti, dateNine)) {
+        onOpenHour();
+        return;  
+      }
+      if (isBefore(customDateCti, dateBefore)) {
+        onOpenHour();
+        return;  
+      }
+      setMessageModal('Dúvidas enviadas!')
+      onOpen();
     } catch(err) {
       console.log(err);
     }
@@ -153,7 +179,6 @@ export default function Home() {
   const openDisciplina = useCallback((ix) => {
     let newArray = [...disciplinasSelected];
     newArray[ix].open = !disciplinasSelected[ix].open ? true : false
-    console.log(newArray[ix].open)
     setDisciplinasSelected(newArray);
   }, [disciplinasSelected])
 
@@ -166,7 +191,7 @@ export default function Home() {
 
 
   return (
-    <Box h="100vh" bg={isWideVersion ? '#E5E5E5' : '#fff' }>
+    <Box bg={isWideVersion ? '#E5E5E5' : '#fff' }>
       {isWideVersion && <Header />}
       
       <Layout isWideVersion={isWideVersion}>
@@ -177,7 +202,7 @@ export default function Home() {
               <SimpleGrid columns={[1,2, 2]} ml={["32px", "60px"]} mt={["35px", "95px"]} w={['226px', "100%"]}>
                 <Text fontSize="28px">Conta pra gente, como foi seu dia?</Text>
                 {isWideVersion && (
-                  <InputDate setDate={setDateCti} />
+                    <InputDate setDate={setDateCti} />
                 )}
               </SimpleGrid>
             </Flex>
@@ -242,7 +267,8 @@ export default function Home() {
                 <Box px={["24px", "80px"]} onClick={() => openDisciplina(exD)} cursor="pointer">
                   <Flex borderBottom="1px solid #60C7AF" mt="48px" pb="10px" justify="space-between" align="center">
                     <Text fontSize="24px" fontWeight="bold">{item.dsc_disciplina}</Text>
-                    <BsChevronCompactDown size={30}/>
+                    {item?.open ? <BsChevronCompactDown size={30}/> : <BsChevronCompactRight size={30}/>}
+                    
                   </Flex>
                 </Box>
                 <Collapse in={item.open}>
@@ -250,7 +276,7 @@ export default function Home() {
                     <Box border="2px solid #E5E5E5" p="25px" mt="25px" ml={["24px", "90px"]} mr={["24px", "90px"]} key={questM.id}>
                       <Flex justify="space-between" align="center" onClick={() => openQuestao(ix)} cursor="pointer">
                         <Text fontSize="28px" fontWeight="bold">{questM.dsc_questao}</Text>
-                        <BsChevronCompactDown size={30}/>
+                        {questM?.open ? <BsChevronCompactDown size={30}/> : <BsChevronCompactRight size={30}/>}
                       </Flex>
                       <Collapse in={questM.open}>
                         <RadioGroup mt="50px" onChange={(ev) => selectedOptions(ev, ix)}>
@@ -288,7 +314,8 @@ export default function Home() {
         )}
       </Layout>
       <Footer step={step} firstStep={1} lastStep={2} nextStep={nextStep} previousStep={() => setStep(step-1)} finishStep={finishStep} />
-      <ModalFinish isOpen={isOpen} onClose={onClose} onOpen={onOpen} />
+      <ModalFinish isOpen={isOpen} onClose={closeModal} onOpen={onOpen} message={messageModal} />
+      <ModalHour isOpen={isOpenHour} onClose={onCloseHour} onOpen={onOpenHour} />
       {/* <ModalConteudo isOpen={IsOpenConteudo} onClose={onCloseConteudo} conteudos={conteudos} idDisciplina={idDisciplina} /> */}
     </Box>
   )

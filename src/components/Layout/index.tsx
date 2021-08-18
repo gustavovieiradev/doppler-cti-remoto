@@ -16,7 +16,7 @@ export function Layout({children, isWideVersion = true}: LayoutProps) {
           {children}
         </Box>
       ) : (
-        <Box w="100%" bg="#fff" height="100%" pt="32px">
+        <Box w="100%" bg="#fff" pt="32px" mb="100px">
           <Flex justify="flex-end" mr="24px">
             <Text fontSize="18px" color="black" textDecoration="underline" onClick={() => Router.push('/')}>SAIR</Text>
           </Flex>

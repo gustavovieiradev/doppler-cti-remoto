@@ -15,12 +15,11 @@ export function InputDateMobile({setDate = () => {}}: InputDateProps) {
   const handleChange = (e) => {
     setIsOpen(!isOpen);
     setCurrentDate(e);
-    setDate(currentDate)
+    setDate(e)
   };
   const handleClick = (e) => {
     e.preventDefault();
     setIsOpen(!isOpen);
-    
   };
 
   return (
