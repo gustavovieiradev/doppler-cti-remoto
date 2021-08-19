@@ -73,10 +73,6 @@ export default function Home() {
   })
 
   useEffect(() => {
-    const localUser = localStorage.getItem('nextauth.user');
-    const userParse = JSON.parse(localUser);
-    setUser(userParse);
-    
     async function loadDisciplinas() {
       const {data} = await api.get(`/api/public/disciplina/?ano_letivo=2021`);
       console.log(data);

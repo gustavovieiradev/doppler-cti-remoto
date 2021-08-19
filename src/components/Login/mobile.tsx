@@ -9,9 +9,10 @@ import { LoginFormData } from "./interfaces";
 import { loginFormSchema } from "./schema";
 import { api } from '../../services/api';
 import { useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 
 export function LoginMobile() {
-  const toast = useToast();
+  const { signIn } = useAuth();
   const { register, handleSubmit, formState } = useForm({
     resolver: yupResolver(loginFormSchema)
   });
@@ -19,24 +20,7 @@ export function LoginMobile() {
 
   const handleLogin: SubmitHandler<LoginFormData> = async (values) => {
     try {
-      setLoading(true)
-      const {data} = await api.get(`api/public/aluno/?dsc_matricula=${values.matricula}&format=json`)
-
-      if (!data.length) {
-        toast({
-          title: 'Matrícula não encontrada!',
-          status: 'error',
-          duration: 9000,
-          isClosable: true
-        })
-        setLoading(false)
-        return;
-      }
-
-      setLoading(true)
-
-      Router.push('/home');
-
+      await signIn(values);
     } catch (err) {
       setLoading(false)
       console.log(err)
