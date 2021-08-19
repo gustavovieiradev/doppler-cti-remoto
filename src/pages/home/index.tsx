@@ -45,7 +45,7 @@ export default function Home() {
   const [messageModal, setMessageModal] = useState('Incrível, Parabéns!');
   const [duvida, setDuvida] = useState("1");
   const [step, setStep] = useState(1);
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isOpenHour, onOpen: onOpenHour, onClose: onCloseHour } = useDisclosure();
   const [disciplinas, setDisciplinas] = useState<Disciplina[]>([]);
@@ -73,7 +73,10 @@ export default function Home() {
   })
 
   useEffect(() => {
-
+    const localUser = localStorage.getItem('nextauth.user');
+    const userParse = JSON.parse(localUser);
+    setUser(userParse);
+    
     async function loadDisciplinas() {
       const {data} = await api.get(`/api/public/disciplina/?ano_letivo=2021`);
       console.log(data);

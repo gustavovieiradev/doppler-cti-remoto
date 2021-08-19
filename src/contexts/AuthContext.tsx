@@ -28,6 +28,7 @@ interface AuthContextData {
   // signOut: () => void;
   user: User;
   isAuthenticated: boolean;
+  setUser: (user: User) => void;
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
@@ -80,7 +81,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   return (
-    <AuthContext.Provider value={{ signIn, user, isAuthenticated }}>
+    <AuthContext.Provider value={{ signIn, user, isAuthenticated, setUser }}>
       {children}
     </AuthContext.Provider>
   )
