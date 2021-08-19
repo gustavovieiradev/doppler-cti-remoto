@@ -37,6 +37,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   
   useEffect(() => {
     const { 'nextauth.user': cookieUser } = parseCookies();
+    const localUser = localStorage.getItem('nextauth.user');
+
+    if (localUser) {
+      const userParse = JSON.parse(localUser);
+      setUser(userParse);
+    }
 
     if (cookieUser) {
       const userParse = JSON.parse(cookieUser);
@@ -59,6 +65,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return;
       }
       setUser(data[0]);
+
+      localStorage.setItem('nextauth.user', JSON.stringify(data[0]));
 
       setCookie(undefined, 'nextauth.user', JSON.stringify(data[0]), {
         maxAge:  60 * 60 * 24 * 30,
