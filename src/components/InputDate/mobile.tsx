@@ -27,7 +27,8 @@ export function InputDateMobile({setDate = () => {}}: InputDateProps) {
   return (
     <Flex direction="column">
       {isOpen && (<DatePicker inline onChange={handleChange} selected={currentDate} maxDate={currentDate}/>)}
-      <HStack height="80px" justify="space-between" onClick={handleClick} borderBottomWidth="2px" borderBottomStyle="dashed" borderBottomColor="black">
+      <Text textAlign="center">CTI do dia</Text>
+      <HStack justify="space-between" onClick={handleClick} borderBottomWidth="2px" borderBottomStyle="dashed" borderBottomColor="black" py="5px">
         <Flex align="center" justify="center">
           <FiCalendar size={24}/>
         </Flex>
