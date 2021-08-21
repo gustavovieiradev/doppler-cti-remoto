@@ -101,11 +101,19 @@ export default function Home() {
 
       let ctiId = 0;
 
+      let isForaPrazo = false;
+      if (isAfter(customDateCti, dateNine)) {
+        isForaPrazo = true
+      }
+      if (isBefore(customDateCti, dateBefore)) {
+        isForaPrazo = true
+      }
+
       if (!data.length) {
         const cti = await api.post(`/api/public/cti/`, {
           criador: 1,
           dsc_cti: 'CTI 01',
-          dat_cti: formatCustomDateCti
+          dat_cti: formatCustomDateCti,
         })
         ctiId = cti.data.id
       } else {
@@ -120,20 +128,11 @@ export default function Home() {
           dsc_duvida: questionFilter[i].value,
           aluno: user.id,
           questao: questionFilter[i].id,
-          cti: ctiId
+          cti: ctiId,
+          is_remoto: true,
+          is_fora_prazo: isForaPrazo
         });
       }
-
-      // const response = await api.post('api/public/duvida/', {
-      //   dsc_duvida: 2,
-      //   aluno: 172,
-      //   questao: 24508,
-      //   cti: 1153
-      // });
-
-      // console.log(response);
-
-      // onOpen();
 
       setStep(1);
       clearData();
@@ -141,7 +140,6 @@ export default function Home() {
       const dt = zonedTimeToUtc(new Date(), 'America/Sao_Paulo');
       setDateCti(dt)
       if (isAfter(customDateCti, dateNine)) {
-        console.log(customDateCti)
         onOpenHour();
         return;  
       }
