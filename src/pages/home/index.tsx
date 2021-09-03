@@ -94,9 +94,10 @@ export default function Home() {
       const dateBefore =  new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
       const dateNine = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 21, 0, 0);
       const customDateCti = zonedTimeToUtc(dateCti, 'America/Sao_Paulo');
+      const customDateEnvioCti = zonedTimeToUtc(today, 'America/Sao_Paulo');
       
       const formatCustomDateCti = format(customDateCti, "yyyy-MM-dd'T'00:00:00.000'Z'");
-      const formatCustomDateEnvio = format(customDateCti, "yyyy-MM-dd'T'HH:mm:ss.000'Z'");
+      const formatCustomDateEnvio = format(customDateEnvioCti, "yyyy-MM-dd'T'HH:mm:ss.000'Z'");
 
       const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${formatCustomDateCti}&criador=&ano_letivo=2021`)
 
