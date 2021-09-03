@@ -96,6 +96,7 @@ export default function Home() {
       const customDateCti = zonedTimeToUtc(dateCti, 'America/Sao_Paulo');
       
       const formatCustomDateCti = format(customDateCti, "yyyy-MM-dd'T'00:00:00.000'Z'");
+      const formatCustomDateEnvio = format(customDateCti, "yyyy-MM-dd'T'HH:mm:ss.000'Z'");
 
       const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${formatCustomDateCti}&criador=&ano_letivo=2021`)
 
@@ -130,7 +131,8 @@ export default function Home() {
           questao: questionFilter[i].id,
           cti: ctiId,
           is_remoto: true,
-          is_fora_prazo: isForaPrazo
+          is_fora_prazo: isForaPrazo,
+          dat_envio: formatCustomDateEnvio
         });
       }
 
