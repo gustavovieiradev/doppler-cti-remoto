@@ -125,6 +125,13 @@ export default function Home() {
   
       const questionFilter = questoes.filter(q => !!q.value);
 
+      await api.post('api/public/cti/remoto/', {
+        aluno: user.id,
+        cti: ctiId,
+        is_fora_prazo: isForaPrazo,
+        dat_envio: formatCustomDateEnvio
+      });
+
       for (let i = 0; i < questionFilter.length; i++) {
         await api.post('api/public/duvida/', {
           dsc_duvida: questionFilter[i].value,
@@ -166,8 +173,55 @@ export default function Home() {
     }
   }
 
-  function nextStep() {
+  async function nextStep() {
     if (step === 1 && duvida === '2') {
+      const today = new Date();
+      const dateBefore =  new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
+      const dateNine = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 21, 0, 0);
+      const customDateCti = zonedTimeToUtc(dateCti, 'America/Sao_Paulo');
+      const customDateEnvioCti = zonedTimeToUtc(today, 'America/Sao_Paulo');
+      
+      const formatCustomDateCti = format(customDateCti, "yyyy-MM-dd'T'00:00:00.000'Z'");
+      const formatCustomDateEnvio = format(customDateEnvioCti, "yyyy-MM-dd'T'HH:mm:ss.000'Z'");
+      const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${formatCustomDateCti}&criador=&ano_letivo=2021`)
+      let ctiId = 0;
+      if (!data.length) {
+        const cti = await api.post(`/api/public/cti/`, {
+          criador: 1,
+          dsc_cti: 'CTI 01',
+          dat_cti: formatCustomDateCti,
+        })
+        ctiId = cti.data.id
+      } else {
+        const lastItem = data[data.length - 1];
+        ctiId = lastItem.id;
+      }
+      let isForaPrazo = false;
+      if (isAfter(customDateCti, dateNine)) {
+        isForaPrazo = true
+      }
+      if (isBefore(customDateCti, dateBefore)) {
+        isForaPrazo = true
+      }
+      await api.post('api/public/cti/remoto/', {
+        aluno: user.id,
+        cti: ctiId,
+        is_fora_prazo: isForaPrazo,
+        dat_envio: formatCustomDateEnvio
+      });
+      const dt = zonedTimeToUtc(new Date(), 'America/Sao_Paulo');
+      setDateCti(dt)
+      if (isAfter(customDateCti, dateNine)) {
+        onOpenHour();
+        return;  
+      }
+      if (isBefore(customDateCti, dateBefore)) {
+        console.log(2222)
+        onOpenHour();
+        return;  
+      }
+      // setMessageModal('Dúvidas enviadas!')
+      onCloseHour();
       onOpen();
       return;
     }
