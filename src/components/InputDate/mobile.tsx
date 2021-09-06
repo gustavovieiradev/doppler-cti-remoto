@@ -12,6 +12,7 @@ interface InputDateProps {
 
 export function InputDateMobile({setDate = () => {}}: InputDateProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [maxDate, setMaxDate] = useState(zonedTimeToUtc(new Date(), 'America/Sao_Paulo'));
   const [currentDate, setCurrentDate] = useState(zonedTimeToUtc(new Date(), 'America/Sao_Paulo'));
   const handleChange = (e) => {
     setIsOpen(!isOpen);
@@ -26,7 +27,7 @@ export function InputDateMobile({setDate = () => {}}: InputDateProps) {
 
   return (
     <Flex direction="column">
-      {isOpen && (<DatePicker inline onChange={handleChange} selected={currentDate} maxDate={currentDate}/>)}
+      {isOpen && (<DatePicker inline onChange={handleChange} selected={currentDate} maxDate={maxDate}/>)}
       <Text textAlign="center">CTI do dia</Text>
       <HStack justify="space-between" onClick={handleClick} borderBottomWidth="2px" borderBottomStyle="dashed" borderBottomColor="black" py="5px">
         <Flex align="center" justify="center">
