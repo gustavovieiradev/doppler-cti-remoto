@@ -104,12 +104,12 @@ export default function Home() {
       let ctiId = 0;
 
       let isForaPrazo = false;
-      if (isAfter(customDateCti, dateNine)) {
+      if (isAfter(today, dateNine)) {
         isForaPrazo = true
       }
-      if (isBefore(customDateCti, dateBefore)) {
-        isForaPrazo = true
-      }
+      // if (isBefore(customDateCti, dateBefore)) {
+      //   isForaPrazo = true
+      // }
 
       if (!data.length) {
         const cti = await api.post(`/api/public/cti/`, {
@@ -149,15 +149,15 @@ export default function Home() {
       setLoadingSave(false);
       const dt = zonedTimeToUtc(new Date(), 'America/Sao_Paulo');
       setDateCti(dt)
-      if (isAfter(customDateCti, dateNine)) {
+      if (isAfter(today, dateNine)) {
         onOpenHour();
         return;  
       }
-      if (isBefore(customDateCti, dateBefore)) {
-        console.log(2222)
-        onOpenHour();
-        return;  
-      }
+      // if (isBefore(customDateCti, dateBefore)) {
+      //   console.log(2222)
+      //   onOpenHour();
+      //   return;  
+      // }
       setMessageModal('Dúvidas enviadas!')
       onCloseHour();
       onOpen();
@@ -180,6 +180,9 @@ export default function Home() {
       const dateNine = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 21, 0, 0);
       const customDateCti = zonedTimeToUtc(dateCti, 'America/Sao_Paulo');
       const customDateEnvioCti = zonedTimeToUtc(today, 'America/Sao_Paulo');
+
+      console.log(today)
+      console.log(dateNine)
       
       const formatCustomDateCti = format(customDateCti, "yyyy-MM-dd'T'00:00:00.000'Z'");
       const formatCustomDateEnvio = format(customDateEnvioCti, "yyyy-MM-dd'T'HH:mm:ss.000'Z'");
@@ -197,12 +200,12 @@ export default function Home() {
         ctiId = lastItem.id;
       }
       let isForaPrazo = false;
-      if (isAfter(customDateCti, dateNine)) {
+      if (isAfter(today, dateNine)) {
         isForaPrazo = true
       }
-      if (isBefore(customDateCti, dateBefore)) {
-        isForaPrazo = true
-      }
+      // if (isBefore(customDateCti, dateBefore)) {
+      //   isForaPrazo = true
+      // }
       await api.post('api/public/cti/remoto/', {
         aluno: user.id,
         cti: ctiId,
@@ -211,15 +214,15 @@ export default function Home() {
       });
       const dt = zonedTimeToUtc(new Date(), 'America/Sao_Paulo');
       setDateCti(dt)
-      if (isAfter(customDateCti, dateNine)) {
+      if (isAfter(today, dateNine)) {
         onOpenHour();
         return;  
       }
-      if (isBefore(customDateCti, dateBefore)) {
-        console.log(2222)
-        onOpenHour();
-        return;  
-      }
+      // if (isBefore(customDateCti, dateBefore)) {
+      //   console.log(2222)
+      //   onOpenHour();
+      //   return;  
+      // }
       // setMessageModal('Dúvidas enviadas!')
       onCloseHour();
       onOpen();
