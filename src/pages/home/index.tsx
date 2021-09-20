@@ -476,19 +476,19 @@ export default function Home() {
                             <Collapse in={questM.open}>
                               <RadioGroup mt="50px" onChange={(ev) => selectedOptions(ev, questM)} value={String(questM.value)}>
                                 <VStack align="center" justify="center" mt="20px">
-                                  <Flex bg={questM.value === 1 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 1 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%" >
+                                  <Flex bg={questM.value === 1 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 1 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h={["120px", "120px", "100px"]} align="center" px="20px" w="100%" >
                                     <Radio colorScheme="teal" value="1" size="lg">
-                                      <Text fontSize={["16px", "28px"]}>Foram sanadas, sem a necessidade da monitoria</Text>
+                                      <Text fontSize={["16px", "18px", "28px"]} lineHeight={["25px", "25px", "40px"]}>Foram sanadas, sem a necessidade da monitoria</Text>
                                     </Radio>
                                   </Flex>
-                                  <Flex bg={questM.value === 2 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 2 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%">
+                                  <Flex bg={questM.value === 2 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 2 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h={["120px", "120px", "100px"]} align="center" px="20px" w="100%">
                                     <Radio colorScheme="teal" value="2" fontSize="28px" size="lg">
-                                      <Text fontSize={["16px", "28px"]} lineHeight="21px">Foram sanadas, com a necessidade da monitoria e não tenho mais dúvidas no conteúdo</Text>
+                                      <Text fontSize={["16px", "18px", "28px"]} lineHeight={["25px", "25px", "40px"]}>Foram sanadas, com a necessidade da monitoria e não tenho mais dúvidas no conteúdo</Text>
                                     </Radio>
                                   </Flex>
-                                  <Flex bg={questM.value === 3 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 3 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%" >
+                                  <Flex bg={questM.value === 3 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 3 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h={["120px", "120px", "100px"]} align="center" px="20px" w="100%" >
                                     <Radio colorScheme="teal" value="3" fontSize="28px" size="lg">
-                                      <Text fontSize={["16px", "28px"]} lineHeight="21px">Foram sanadas, com a necessidade da monitoria e continuo com dúvidas no conteúdo</Text>
+                                      <Text fontSize={["16px", "18px", "28px"]} lineHeight={["25px", "25px", "40px"]}>Foram sanadas, com a necessidade da monitoria e continuo com dúvidas no conteúdo</Text>
                                     </Radio>
                                   </Flex>
                                 </VStack>
