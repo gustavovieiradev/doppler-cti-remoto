@@ -25,7 +25,7 @@ export function LoginDesktop() {
       <Flex w="100vw" h="100vh" bg="teal.300" align="center" justify="center" px="170px" py="120px" as="form" onSubmit={handleSubmit(handleLogin)}>
         <Flex w="730px" h="680px" bg="white" align="flex-start" p="20px" direction="column" position="relative">
           <Image src="/img/logo-doppler.svg" alt="logo" />
-          <Heading fontSize="28px" mt="42px">Acesse o CTI Home School</Heading>
+          <Heading fontSize="28px" mt="42px">Acesse o formulário do CTI</Heading>
           <Image src="/img/ilustra-home.svg" position="absolute" bottom="20px" right="20px" w="613px" height="554px" alt="ilustra-home" />
         </Flex>
         <Stack bg="#FBFBFB" w="390px" h="421px" justify="center" align="center" direction="column" px="40px" spacing="10px">

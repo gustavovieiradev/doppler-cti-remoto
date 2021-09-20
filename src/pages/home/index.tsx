@@ -359,10 +359,10 @@ export default function Home() {
       <Layout isWideVersion={isWideVersion}>
         {step === 1 && (
           <Box>
-            <Text fontSize="28px" ml={["13px", "40px"]} mt={["16px", "35px"]} >Olá {user?.dsc_nome_completo}, bem vindo!</Text>
+            <Text fontSize="28px" ml={["13px", "40px"]} mt={["16px", "35px"]} >Olá {user?.dsc_nome_completo}, bem-vindo!</Text>
             <Flex>
               <SimpleGrid columns={[1,2, 2]} ml={["32px", "60px"]} mt={["35px", "95px"]} w={['226px', "100%"]}>
-                <Text fontSize="28px">Conta pra gente, como foi seu dia?</Text>
+                <Text fontSize="28px">Conte para a nossa equipe, como foi seu dia?</Text>
                 {isWideVersion && (
                     <InputDate setDate={setDateCti} />
                 )}
@@ -478,17 +478,17 @@ export default function Home() {
                                 <VStack align="center" justify="center" mt="20px">
                                   <Flex bg={questM.value === 1 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 1 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%" >
                                     <Radio colorScheme="teal" value="1" size="lg">
-                                      <Text fontSize={["16px", "28px"]}>Foram sanadas</Text>
+                                      <Text fontSize={["16px", "28px"]}>Foram sanadas, sem a necessidade da monitoria</Text>
                                     </Radio>
                                   </Flex>
                                   <Flex bg={questM.value === 2 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 2 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%">
                                     <Radio colorScheme="teal" value="2" fontSize="28px" size="lg">
-                                      <Text fontSize={["16px", "28px"]} lineHeight="21px">Acionei a monitoria mas continuo em dúvida</Text>
+                                      <Text fontSize={["16px", "28px"]} lineHeight="21px">Foram sanadas, com a necessidade da monitoria e não tenho mais dúvidas no conteúdo</Text>
                                     </Radio>
                                   </Flex>
                                   <Flex bg={questM.value === 3 ? 'rgba(96, 199, 175, 0.1)' : ''} border={questM.value === 3 ? "1px solid #60C7AF" : '1px solid #E5E5E5'} h="80px" align="center" px="20px" w="100%" >
                                     <Radio colorScheme="teal" value="3" fontSize="28px" size="lg">
-                                      <Text fontSize={["16px", "28px"]} lineHeight="21px">Não consegui resolver o exercício</Text>
+                                      <Text fontSize={["16px", "28px"]} lineHeight="21px">Foram sanadas, com a necessidade da monitoria e continuo com dúvidas no conteúdo</Text>
                                     </Radio>
                                   </Flex>
                                 </VStack>

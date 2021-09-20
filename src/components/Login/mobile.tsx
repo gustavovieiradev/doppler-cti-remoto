@@ -38,9 +38,9 @@ export function LoginMobile() {
         <Box position="relative" height="230px">
           <Image src="/img/ilustra-home.svg" w="250px" height="220px" alt="ilustra-home" position="absolute" right="0" />
           <Box fontSize="28px" fontWeight="bold" position="absolute">
-            <Text>Acesse o CTI </Text>
-            <Text>Home</Text>
-            <Text>School</Text>
+            <Text>Acesse o </Text>
+            <Text>formulário do </Text>
+            <Text>CTI</Text>
           </Box>
         </Box>
         <Stack as="form" onSubmit={handleSubmit(handleLogin)}>
