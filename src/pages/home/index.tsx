@@ -74,13 +74,14 @@ export default function Home() {
 
   useEffect(() => {
     async function loadDisciplinas() {
-      const {data} = await api.get(`/api/public/disciplina/?ano_letivo=2021`);
+      const year = new Date(dateCti).getFullYear()
+      const {data} = await api.get(`/api/public/disciplina/?ano_letivo=${year}`);
       console.log(data);
       setDisciplinas(data);
     }
     loadDisciplinas();
 
-  }, [])
+  }, [dateCti])
 
   function closeModal() {
     onClose()
@@ -99,7 +100,9 @@ export default function Home() {
       const formatCustomDateCti = format(customDateCti, "yyyy-MM-dd'T'00:00:00.000'Z'");
       const formatCustomDateEnvio = format(customDateEnvioCti, "yyyy-MM-dd'T'HH:mm:ss.000'Z'");
 
-      const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${formatCustomDateCti}&criador=&ano_letivo=2021`)
+      const year = new Date(dateCti).getFullYear()
+
+      const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${formatCustomDateCti}&criador=&ano_letivo=${year}`)
 
       let ctiId = 0;
 
@@ -186,7 +189,10 @@ export default function Home() {
       
       const formatCustomDateCti = format(customDateCti, "yyyy-MM-dd'T'00:00:00.000'Z'");
       const formatCustomDateEnvio = format(customDateEnvioCti, "yyyy-MM-dd'T'HH:mm:ss.000'Z'");
-      const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${formatCustomDateCti}&criador=&ano_letivo=2021`)
+
+      const year = new Date(dateCti).getFullYear()
+
+      const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${formatCustomDateCti}&criador=&ano_letivo=year`)
       let ctiId = 0;
       if (!data.length) {
         const cti = await api.post(`/api/public/cti/`, {
@@ -233,15 +239,23 @@ export default function Home() {
   }
  
   useEffect(() => {
+
+
+
     async function loadConteudos() {
-      const {data} = await api.get(`/api/public/conteudo/?ano_letivo=2021&disciplina=${idDisciplina}`)
+      console.log(dateCti)
+      const year = new Date(dateCti).getFullYear()
+
+      console.log(year)
+
+      const {data} = await api.get(`/api/public/conteudo/?ano_letivo=${year}&disciplina=${idDisciplina}`)
       setConteudos(data);
     }
 
     if (idDisciplina) {
       loadConteudos();
     }
-  }, [idDisciplina])
+  }, [idDisciplina, dateCti])
 
   function clearData() {
     setDisciplinasSelected([]);
@@ -256,7 +270,8 @@ export default function Home() {
 
   async function selectedConteudo() {
     setLoadingFiltros(true);
-    const {data} = await api.get(`/api/public/questao/?ano_letivo=2021&conteudo=${idConteudo}`);
+    const year = new Date(dateCti).getFullYear()
+    const {data} = await api.get(`/api/public/questao/?ano_letivo=${year}&conteudo=${idConteudo}`);
 
     if (!data.length) {
       toast({
