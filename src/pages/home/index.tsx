@@ -192,7 +192,7 @@ export default function Home() {
 
       const year = new Date(dateCti).getFullYear()
 
-      const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${formatCustomDateCti}&criador=&ano_letivo=year`)
+      const {data} = await api.get(`/api/public/cti/?dsc_cti=&dat_cti=${formatCustomDateCti}&criador=&ano_letivo=${year}`)
       let ctiId = 0;
       if (!data.length) {
         const cti = await api.post(`/api/public/cti/`, {
